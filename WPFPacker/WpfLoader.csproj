@@ -114,6 +114,9 @@
     <Compile Include="..\common\Encrypt\Encrypt.cs">
       <Link>Encrypt\Encrypt.cs</Link>
     </Compile>
+    <Compile Include="..\common\Encrypt\RC4.cs">
+      <Link>Encrypt\RC4.cs</Link>
+    </Compile>
     <Compile Include="..\common\ShellInfo.cs">
       <Link>ShellInfo.cs</Link>
     </Compile>

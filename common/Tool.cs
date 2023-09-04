@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Security.Cryptography;
 
 
 namespace Common
@@ -16,7 +16,8 @@ namespace Common
     {
         Des,
         Aes,
-        Tdea
+        Tdea,
+        RC4
     }
     public enum AsymmetricEncryptType
     {
@@ -93,22 +94,31 @@ namespace Common
     class Tool
     {
         //序列化xml
-        static public string SerializeToXml(ShellInfo shellInfo)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(ShellInfo));
-            StringWriter writer = new StringWriter();
-            serializer.Serialize(writer, shellInfo);
-            return writer.ToString();
-        }
-        static public ShellInfo DeserializeFromXml(string xml)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(ShellInfo));
-            using (StringReader reader = new StringReader(xml))
-            {
-                return (ShellInfo)serializer.Deserialize(reader);
-            }
-        }
+        //static public string SerializeToXml(ShellInfo shellInfo)
+        //{
+        //    XmlSerializer serializer = new XmlSerializer(typeof(ShellInfo));
+        //    StringWriter writer = new StringWriter();
+        //    serializer.Serialize(writer, shellInfo);
+        //    return writer.ToString();
+        //}
+        //static public ShellInfo DeserializeFromXml(string xml)
+        //{
+        //    XmlSerializer serializer = new XmlSerializer(typeof(ShellInfo));
+        //    using (StringReader reader = new StringReader(xml))
+        //    {
+        //        return (ShellInfo)serializer.Deserialize(reader);
+        //    }
+        //}
 
+        public static byte[] GenerateRandomKey(int length)
+        {
+            byte[] randomBytes = new byte[length];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+            return randomBytes;
+        }
         static public byte[] StrToBytes(string str)
         {
             byte[] bytes = new byte[str.Length * sizeof(char)];
@@ -125,6 +135,7 @@ namespace Common
 
         static public byte[] RemovePadding(byte[] paddedBytes)
         {
+           
             byte[] restoredBytes = new byte[paddedBytes.Length / 2];
 
             for (int i = 0; i < restoredBytes.Length; i++)
@@ -151,5 +162,21 @@ namespace Common
             return result;
         }
     }
+    public class FileTool
+    {
+        public static void DeleteFile(string path)
+        {
+            try
+            {
+                File.Delete(path);
+                Console.WriteLine("文件已成功删除。");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"删除文件时发生错误: {ex.Message}");
+            }
+        }
+    }
+
 
 }

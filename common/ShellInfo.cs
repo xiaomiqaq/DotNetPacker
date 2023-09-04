@@ -17,10 +17,10 @@ namespace Common
         public AsymmetricEncryptType asysEncType;
         public CompressType compType;
         public int oriSize;
-        public int keySize;
         public string asPriKey;
         public byte[] encKey;
         public byte[] iv;
+        public bool usePuf;
 
         public byte[] Serialize()
         {

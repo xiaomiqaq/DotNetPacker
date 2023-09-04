@@ -24,42 +24,44 @@ namespace Algorithm
                 return;
             }
             string outputFolderPath = Path.GetDirectoryName(inputFilePath);
-            Console.WriteLine("请输入加密密钥（32个字符）：");
-            //string key = Console.ReadLine();
-            //测试不同密码，随机
-            string key = "qwertyuiopasdfghjklzxcvbnmqwerty";
-            if (key.Length < 32)
-            {
-                key = key.PadRight(32, '0');
-            }
-
             //混淆
             //string temp = Confuse.ObfuscasteCode(inputFilePath);
 
             byte[] fileData = File.ReadAllBytes(inputFilePath);
             //初始化shellInfo
             ShellInfo shellInfo = new ShellInfo();
-            shellInfo.sysEncType = SymmetricEncryptType.Aes;
+            shellInfo.sysEncType = SymmetricEncryptType.RC4;
             shellInfo.asysEncType = AsymmetricEncryptType.Rsa;
             shellInfo.compType = CompressType.Lzma;
             shellInfo.oriSize = fileData.Length;
-            {
-                //RSA加解密测试
-                byte[] testData = Encoding.UTF8.GetBytes("qwert");
-                var oriType = shellInfo.asysEncType;
-                shellInfo.asysEncType = AsymmetricEncryptType.Rsa;
-                byte[] enc = AsymmetricEncrypt.Encrypt(testData, ref shellInfo);
-                byte[] dec = AsymmetricEncrypt.Decrypt(enc, shellInfo);
-                shellInfo.asysEncType = oriType;
+            byte[] key = Tool.GenerateRandomKey(32);
+            //RSA加解密测试
+            //{
+            //    byte[] testData = Encoding.UTF8.GetBytes("qwert");
+            //    var oriType = shellInfo.asysEncType;
+            //    shellInfo.asysEncType = AsymmetricEncryptType.Rsa;
+            //    byte[] enc = AsymmetricEncrypt.Encrypt(testData, ref shellInfo);
+            //    byte[] dec = AsymmetricEncrypt.Decrypt(enc, shellInfo);
+            //    shellInfo.asysEncType = oriType;
+            //}
 
-            }
             //压缩
             byte[] compressedData = AllCompress.Compress(shellInfo.compType, fileData);
             //非对称加密算法对密钥进行加密
-            Byte[] encKey = AsymmetricEncrypt.Encrypt(Tool.StrToBytes(key), ref shellInfo);
+            Byte[] encKey = AsymmetricEncrypt.Encrypt(key, ref shellInfo);
             shellInfo.encKey = encKey;
             //对称加密
-            var encryptedData = SymmetricEncrypt.Encrypt(compressedData,ref shellInfo,Encoding.ASCII.GetBytes(key));
+            var encryptedData = SymmetricEncrypt.Encrypt(compressedData,ref shellInfo,key);
+            /*des test
+            var decData = SymmetricEncrypt.Decrypt(encryptedData, shellInfo, Encoding.ASCII.GetBytes(key));
+            bool testeq = decData.SequenceEqual(compressedData);
+            des test over */
+            //tdea test
+            //var decData = SymmetricEncrypt.Decrypt(encryptedData,shellInfo,Encoding.ASCII.GetBytes(key));
+           // bool testeq = decData.SequenceEqual(compressedData);
+            
+
+            //test 
             {
                 //解密测试
                 //byte[] d_sysKey = Tool.RemovePadding( Ecc.decrypt(encKey, Ecc.str2PrivateKey(shellInfo.asPriKey)));

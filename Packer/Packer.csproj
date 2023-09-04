@@ -180,6 +180,9 @@
     <Compile Include="..\common\Encrypt\Encrypt.cs">
       <Link>Encypt\Encrypt.cs</Link>
     </Compile>
+    <Compile Include="..\common\Encrypt\RC4.cs">
+      <Link>Encypt\RC4.cs</Link>
+    </Compile>
     <Compile Include="..\common\ShellInfo.cs">
       <Link>Tool\ShellInfo.cs</Link>
     </Compile>

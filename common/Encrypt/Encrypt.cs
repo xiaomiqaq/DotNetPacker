@@ -62,6 +62,16 @@ namespace Algorithm
             if (shellInfo.sysEncType == SymmetricEncryptType.Aes)
             {
                 ret = Algorithm.MAes.Encrypt(data, key, ref shellInfo);
+            }else if(shellInfo.sysEncType == SymmetricEncryptType.Des)
+            {
+                ret = Algorithm.Des.Encrypt(data, key, ref shellInfo);
+            }else if(shellInfo.sysEncType==SymmetricEncryptType.Tdea)
+            {
+                ret = Algorithm.Tdea.Encrypt(data, key, ref shellInfo);
+            }else if(shellInfo.sysEncType==SymmetricEncryptType.RC4)
+            {
+                var rc4 = new Algorithm.RC4(key);
+                ret = rc4.Encrypt(data);
             }
             return ret;
         }
@@ -74,6 +84,16 @@ namespace Algorithm
             if (shellInfo.sysEncType == SymmetricEncryptType.Aes)
             {
                 ret = Algorithm.MAes.Decrypt(data, key, iv);
+            }else if (shellInfo.sysEncType == SymmetricEncryptType.Des)
+            {
+                ret= Algorithm.Des.Decrypt(data, key, iv);
+            }else if (shellInfo.sysEncType == SymmetricEncryptType.Tdea)
+            {
+                ret = Algorithm.Tdea.Decrypt(data, key, iv);
+            }else if (shellInfo.sysEncType == SymmetricEncryptType.RC4)
+            {
+                var rc4 = new Algorithm.RC4(key);
+                ret = rc4.Decrypt(data);
             }
             return ret;
         }
@@ -102,13 +122,13 @@ namespace Algorithm
 
             return compressedData;
         }
-        public static byte[] Encrypt(byte[] data, byte[] key, string outputFolderPath)
+        public static byte[] Encrypt(byte[] data, byte[] key, ref ShellInfo shellInfo)
         {
             using (DES des = DES.Create())
             {
                 des.Key = Compress32To8(key);
                 des.GenerateIV();
-                File.WriteAllBytes(Path.Combine(outputFolderPath, "iv"), des.IV);
+               shellInfo.iv = des.IV;
                 des.Mode = CipherMode.CBC;
                 des.Padding = PaddingMode.PKCS7;
 
@@ -121,7 +141,7 @@ namespace Algorithm
                 }
             }
         }
-        public static byte[] DESDecrypt(byte[] encryptedData, byte[] key, byte[] iv)
+        public static byte[] Decrypt(byte[] encryptedData, byte[] key, byte[] iv)
         {
             using (DES des = DES.Create())
             {
@@ -161,13 +181,13 @@ namespace Algorithm
 
             return compressedData;
         }
-        public static byte[] Encrypt(byte[] data, byte[] key, string outputFolderPath)
+        public static byte[] Encrypt(byte[] data, byte[] key, ref ShellInfo shellInfo)
         {
             using (TripleDES tdea = TripleDES.Create())
             {
                 tdea.Key = Compress32To24(key);
                 tdea.GenerateIV();
-                File.WriteAllBytes(Path.Combine(outputFolderPath, "iv"), tdea.IV);
+                shellInfo.iv = tdea.IV;
                 tdea.Mode = CipherMode.CBC;
                 tdea.Padding = PaddingMode.PKCS7;
 
